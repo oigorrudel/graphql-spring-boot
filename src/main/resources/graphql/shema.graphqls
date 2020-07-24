@@ -18,8 +18,10 @@ input PersonInput{
 
 type Query{
     findAllPeople: [Person]
+    findPersonById(id: Int): Person
 }
 
 type Mutation{
     savePerson(person: PersonInput): Person
+    updateAge(personId: Int, age: Int): Person
 }
