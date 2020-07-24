@@ -2,7 +2,14 @@ type Person{
     id: ID!,
     name: String,
     age: Int,
-    gender: Gender
+    gender: Gender,
+    pets: [Pet]
+}
+
+type Pet{
+    id: ID!,
+    name: String,
+    owner: Person
 }
 
 enum Gender {
@@ -16,12 +23,19 @@ input PersonInput{
     gender: Gender
 }
 
+input PetInput{
+    name: String,
+    ownerId: Int
+}
+
 type Query{
     findAllPeople: [Person]
     findPersonById(id: Int): Person
+    findAllPets: [Pet]
 }
 
 type Mutation{
     savePerson(person: PersonInput): Person
     updateAge(personId: Int, age: Int): Person
+    savePet(pet: PetInput): Pet
 }

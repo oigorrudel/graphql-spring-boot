@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Collection;
 
 @Getter
 @Setter
@@ -25,6 +26,10 @@ public class Person {
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
+
+    @OneToMany(mappedBy = "owner")
+    private Collection<Pet> pets;
+
 
     public Person(String name, Integer age, Gender gender) {
         this.name = name;
