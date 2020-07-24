@@ -1,0 +1,25 @@
+type Person{
+    id: ID!,
+    name: String,
+    age: Int,
+    gender: Gender
+}
+
+enum Gender {
+    MALE
+    FEMALE
+}
+
+input PersonInput{
+    name: String,
+    age: Int,
+    gender: Gender
+}
+
+type Query{
+    findAllPeople: [Person]
+}
+
+type Mutation{
+    savePerson(person: PersonInput): Person
+}
