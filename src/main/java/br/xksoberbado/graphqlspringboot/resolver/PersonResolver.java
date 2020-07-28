@@ -3,6 +3,8 @@ package br.xksoberbado.graphqlspringboot.resolver;
 import br.xksoberbado.graphqlspringboot.input.PersonInput;
 import br.xksoberbado.graphqlspringboot.model.Person;
 import br.xksoberbado.graphqlspringboot.repository.PersonRepository;
+import br.xksoberbado.graphqlspringboot.subscription.Subscriber;
+import br.xksoberbado.graphqlspringboot.subscription.SubscriberRegister;
 import com.coxautodev.graphql.tools.GraphQLMutationResolver;
 import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 import com.coxautodev.graphql.tools.GraphQLSubscriptionResolver;
@@ -13,7 +15,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 
 import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class PersonResolver implements GraphQLQueryResolver, GraphQLMutationResolver, GraphQLSubscriptionResolver {
@@ -21,7 +22,11 @@ public class PersonResolver implements GraphQLQueryResolver, GraphQLMutationReso
     @Autowired
     private PersonRepository repository;
 
-    private ConcurrentHashMap<Long, FluxSink<Person>> personSubscribers = new ConcurrentHashMap<>();
+    private Subscriber subscriber;
+
+    public PersonResolver() {
+        subscriber = SubscriberRegister.register(Person.class);
+    }
 
     public Collection<Person> findAllPeople(){
         return repository.findAll();
@@ -40,16 +45,13 @@ public class PersonResolver implements GraphQLQueryResolver, GraphQLMutationReso
         person.setAge(age);
         repository.save(person);
 
-        if(personSubscribers.containsKey(personId))
-            personSubscribers.get(personId).next(person);
+        SubscriberRegister.emit(personId, person);
 
         return person;
     }
 
     public Publisher<Person> onPersonUpdated(Long personId){
-        return Flux.create(subscriber ->
-                                personSubscribers.put(personId, subscriber.onDispose(() -> personSubscribers.remove(personId, subscriber))),
-                            FluxSink.OverflowStrategy.LATEST);
+        return subscriber.subscription(personId);
     }
 
 }
