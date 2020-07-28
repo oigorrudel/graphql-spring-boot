@@ -39,3 +39,7 @@ type Mutation{
     updateAge(personId: Int, age: Int): Person
     savePet(pet: PetInput): Pet
 }
+
+type Subscription{
+    onPersonUpdated(personId: Int): Person
+}
