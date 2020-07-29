@@ -3,16 +3,14 @@ package br.xksoberbado.graphqlspringboot.resolver;
 import br.xksoberbado.graphqlspringboot.input.PersonInput;
 import br.xksoberbado.graphqlspringboot.model.Person;
 import br.xksoberbado.graphqlspringboot.repository.PersonRepository;
-import br.xksoberbado.graphqlspringboot.subscription.Subscriber;
-import br.xksoberbado.graphqlspringboot.subscription.SubscriberRegister;
+import br.xksoberbado.graphqlspringboot.subscription.Subscribers;
+import br.xksoberbado.graphqlspringboot.subscription.SubscribersRegister;
 import com.coxautodev.graphql.tools.GraphQLMutationResolver;
 import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 import com.coxautodev.graphql.tools.GraphQLSubscriptionResolver;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
 
 import java.util.Collection;
 
@@ -22,10 +20,10 @@ public class PersonResolver implements GraphQLQueryResolver, GraphQLMutationReso
     @Autowired
     private PersonRepository repository;
 
-    private Subscriber subscriber;
+    private Subscribers subscribers;
 
     public PersonResolver() {
-        subscriber = SubscriberRegister.register(Person.class);
+        subscribers = SubscribersRegister.register(Person.class);
     }
 
     public Collection<Person> findAllPeople(){
@@ -45,13 +43,13 @@ public class PersonResolver implements GraphQLQueryResolver, GraphQLMutationReso
         person.setAge(age);
         repository.save(person);
 
-        SubscriberRegister.emit(personId, person);
+        SubscribersRegister.emit(personId, person);
 
         return person;
     }
 
     public Publisher<Person> onPersonUpdated(Long personId){
-        return subscriber.subscription(personId);
+        return subscribers.subscription(personId);
     }
 
 }

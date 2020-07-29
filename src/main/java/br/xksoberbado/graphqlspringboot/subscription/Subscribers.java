@@ -6,7 +6,7 @@ import reactor.core.publisher.FluxSink;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Subscriber<E> extends ConcurrentHashMap<Long, FluxSink<E>> {
+public class Subscribers<E> extends ConcurrentHashMap<Long, FluxSink<E>> {
 
     public Publisher<E> subscription(Long id){
         return Flux.create(subscriber -> this.put(id, subscriber.onDispose(() -> this.remove(id, subscriber))),

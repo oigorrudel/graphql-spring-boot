@@ -4,27 +4,27 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SubscriberRegister {
+public class SubscribersRegister {
 
-    private static SubscriberRegister instance;
-    private static ConcurrentHashMap<Class, List<Subscriber>> subscribersMap;
+    private static SubscribersRegister instance;
+    private static ConcurrentHashMap<Class, List<Subscribers>> subscribersMap;
 
-    private SubscriberRegister() {
+    private SubscribersRegister() {
         subscribersMap = new ConcurrentHashMap<>();
     }
 
     private synchronized static void instance(){
         if(instance == null)
-            instance = new SubscriberRegister();
+            instance = new SubscribersRegister();
     }
 
-    public static Subscriber register(Class clazz){
+    public static Subscribers register(Class clazz){
         instance();
 
         if(!subscribersMap.containsKey(clazz))
             subscribersMap.put(clazz, new LinkedList<>());
 
-        Subscriber sub = new Subscriber<>();
+        Subscribers sub = new Subscribers<>();
         subscribersMap.get(clazz).add(sub);
         return sub;
     }
